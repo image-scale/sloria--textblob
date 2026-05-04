@@ -4,7 +4,7 @@ A Python library for processing textual data. It provides a simple API for
 diving into common natural language processing (NLP) tasks.
 """
 
-from textblob.blob import Sentence, TextBlob, Word, WordList
+from textblob.blob import Blobber, Sentence, TextBlob, Word, WordList
 from textblob.inflect import pluralize, singularize
 
 # Import submodules for easier access
@@ -15,6 +15,7 @@ __all__ = [
     "Sentence",
     "Word",
     "WordList",
+    "Blobber",
     "sentiments",
     "taggers",
     "pluralize",

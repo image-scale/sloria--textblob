@@ -87,3 +87,16 @@
 **Commit**: Implement Sentence class with JSON serialization
 **Acceptance**: 8/8 criteria met
 **Verification**: tests FAIL on previous state (no dict/json methods), PASS on current state (157 passed)
+
+## Round 7
+**Task**: Task 7 — Implement Blobber factory class for creating TextBlobs with shared settings
+**Files created**:
+- tests/test_blobber.py
+
+**Files modified**:
+- src/textblob/blob.py
+- src/textblob/__init__.py
+
+**Commit**: Implement Blobber factory class
+**Acceptance**: 7/7 criteria met
+**Verification**: tests FAIL on previous state (no Blobber class), PASS on current state (167 passed)

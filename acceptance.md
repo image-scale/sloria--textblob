@@ -99,3 +99,14 @@
 - [x] Sentence.json method returns JSON string
 - [x] TextBlob.serialized property returns dictionary with sentences
 - [x] TextBlob.to_json() method returns JSON representation
+
+## Task 7: Blobber factory class
+
+### Acceptance Criteria
+- [x] Blobber class can be instantiated with tokenizer, pos_tagger, analyzer
+- [x] Blobber(text) creates a TextBlob with the preconfigured settings
+- [x] Blobber can be called with text to create TextBlobs
+- [x] Blobber.tokenizer returns the configured tokenizer
+- [x] Blobber.pos_tagger returns the configured pos_tagger
+- [x] Blobber.analyzer returns the configured analyzer
+- [x] Blobber.__repr__ returns descriptive string

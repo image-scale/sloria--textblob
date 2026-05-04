@@ -591,3 +591,45 @@ class Sentence(TextBlob):
         """
         import json
         return json.dumps(self.dict, *args, **kwargs)
+
+
+class Blobber:
+    """A factory for creating TextBlob objects with shared tokenizer, POS tagger,
+    and sentiment analyzer.
+
+    Example:
+        >>> from textblob import Blobber
+        >>> tb = Blobber()
+        >>> blob1 = tb("Hello world.")
+        >>> blob2 = tb("Beautiful is better than ugly.")
+        >>> # Both blobs share the same analyzer and tagger
+
+    :param tokenizer: (optional) A tokenizer instance.
+    :param pos_tagger: (optional) A POS tagger instance.
+    :param analyzer: (optional) A sentiment analyzer instance.
+    """
+
+    def __init__(self, tokenizer=None, pos_tagger=None, analyzer=None):
+        self.tokenizer = tokenizer or TextBlob.tokenizer
+        self.pos_tagger = pos_tagger or TextBlob.pos_tagger
+        self.analyzer = analyzer or TextBlob.analyzer
+
+    def __call__(self, text):
+        """Create a new TextBlob with this Blobber's settings.
+
+        :param text: A string of text.
+        :returns: A TextBlob.
+        """
+        return TextBlob(
+            text,
+            tokenizer=self.tokenizer,
+            pos_tagger=self.pos_tagger,
+            analyzer=self.analyzer,
+        )
+
+    def __repr__(self):
+        return (
+            f"Blobber(tokenizer={self.tokenizer.__class__.__name__}(), "
+            f"pos_tagger={self.pos_tagger.__class__.__name__}(), "
+            f"analyzer={self.analyzer.__class__.__name__}())"
+        )
