@@ -73,3 +73,17 @@
 - [x] Word.definitions returns list of definitions
 - [x] Word can be created from TextBlob.words
 - [x] singularize() and pluralize() are available as module-level functions
+
+## Task 5: WordList class with bulk word operations
+
+### Acceptance Criteria
+- [x] WordList inherits from list (WordList(["hello", "world"]) works like a list)
+- [x] WordList.count(word) performs case-insensitive counting
+- [x] WordList.upper() returns WordList with all words uppercased
+- [x] WordList.lower() returns WordList with all words lowercased
+- [x] WordList.singularize() returns WordList with all words singularized
+- [x] WordList.pluralize() returns WordList with all words pluralized
+- [x] WordList.lemmatize() returns WordList with all words lemmatized
+- [x] WordList.stem() returns WordList with all words stemmed
+- [x] WordList can contain Word objects
+- [x] TextBlob.words returns a WordList

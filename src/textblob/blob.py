@@ -172,6 +172,116 @@ def _penn_to_wordnet(tag):
     return NOUN  # Default to noun
 
 
+class WordList(list):
+    """A list-like collection of Word objects with additional methods for
+    bulk operations.
+
+    Example:
+        >>> from textblob import WordList
+        >>> words = WordList(["cat", "dog", "mouse"])
+        >>> words.pluralize()
+        WordList(['cats', 'dogs', 'mice'])
+        >>> words.upper()
+        WordList(['CAT', 'DOG', 'MOUSE'])
+    """
+
+    def __init__(self, collection=None):
+        """Initialize a WordList.
+
+        :param collection: A list of strings or Words.
+        """
+        if collection is None:
+            collection = []
+        # Convert strings to Word objects
+        words = [w if isinstance(w, Word) else Word(w) for w in collection]
+        super().__init__(words)
+
+    def __repr__(self):
+        return f"WordList({super().__repr__()})"
+
+    def __getitem__(self, key):
+        """Get item(s) from the WordList."""
+        result = super().__getitem__(key)
+        if isinstance(key, slice):
+            return WordList(result)
+        return result
+
+    def count(self, word, case_sensitive=False):
+        """Count occurrences of a word in the list.
+
+        :param word: The word to count.
+        :param case_sensitive: If False (default), count is case-insensitive.
+        :returns: The count of the word.
+        """
+        if case_sensitive:
+            return super().count(word)
+        word_lower = word.lower() if hasattr(word, 'lower') else str(word).lower()
+        return sum(1 for w in self if str(w).lower() == word_lower)
+
+    def upper(self):
+        """Return a new WordList with all words uppercased.
+
+        :returns: A new WordList.
+        """
+        return WordList([Word(str(w).upper()) for w in self])
+
+    def lower(self):
+        """Return a new WordList with all words lowercased.
+
+        :returns: A new WordList.
+        """
+        return WordList([Word(str(w).lower()) for w in self])
+
+    def singularize(self):
+        """Return a new WordList with all words singularized.
+
+        :returns: A new WordList.
+        """
+        return WordList([w.singularize() if isinstance(w, Word) else Word(w).singularize() for w in self])
+
+    def pluralize(self):
+        """Return a new WordList with all words pluralized.
+
+        :returns: A new WordList.
+        """
+        return WordList([w.pluralize() if isinstance(w, Word) else Word(w).pluralize() for w in self])
+
+    def lemmatize(self, pos=None):
+        """Return a new WordList with all words lemmatized.
+
+        :param pos: (optional) Part of speech for lemmatization.
+        :returns: A new WordList.
+        """
+        return WordList([
+            w.lemmatize(pos) if isinstance(w, Word) else Word(w).lemmatize(pos)
+            for w in self
+        ])
+
+    def stem(self):
+        """Return a new WordList with all words stemmed.
+
+        :returns: A new WordList.
+        """
+        return WordList([w.stem() if isinstance(w, Word) else Word(w).stem() for w in self])
+
+    def extend(self, other):
+        """Extend the WordList with another iterable.
+
+        :param other: An iterable of words.
+        """
+        words = [w if isinstance(w, Word) else Word(w) for w in other]
+        super().extend(words)
+
+    def append(self, word):
+        """Append a word to the WordList.
+
+        :param word: A word to append.
+        """
+        if not isinstance(word, Word):
+            word = Word(word)
+        super().append(word)
+
+
 def _validated_param(obj, name, base_class, default, base_class_name=None):
     """Validates a parameter passed to __init__. Makes sure that obj is
     the correct class. Return obj if it's not None or falls back to default.
@@ -251,13 +361,13 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
 
     @cached_property
     def words(self):
-        """Return a list of Word objects. This excludes punctuation characters.
+        """Return a WordList of Word objects. This excludes punctuation characters.
         If you want to include punctuation characters, access the ``tokens``
         property.
 
-        :returns: A list of Word objects.
+        :returns: A WordList of Word objects.
         """
-        return [Word(w) for w in word_tokenize(self.raw, include_punc=False)]
+        return WordList([Word(w) for w in word_tokenize(self.raw, include_punc=False)])
 
     @cached_property
     def tokens(self):

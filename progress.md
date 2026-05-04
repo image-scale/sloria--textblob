@@ -64,3 +64,16 @@
 **Commit**: Implement Word class with inflection, spelling correction, lemmatization, stemming, and WordNet integration
 **Acceptance**: 11/11 criteria met
 **Verification**: tests FAIL on previous state (no Word class, no inflect module), PASS on current state (128 passed)
+
+## Round 5
+**Task**: Task 5 — Implement WordList class with bulk word operations and case-insensitive counting
+**Files created**:
+- tests/test_wordlist.py
+
+**Files modified**:
+- src/textblob/blob.py
+- src/textblob/__init__.py
+
+**Commit**: Implement WordList class with bulk word operations
+**Acceptance**: 10/10 criteria met
+**Verification**: tests FAIL on previous state (no WordList class), PASS on current state (150 passed)
