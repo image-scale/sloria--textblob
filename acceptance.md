@@ -45,16 +45,31 @@
 ## Task 3: Sentiment analysis with Pattern-style analyzer
 
 ### Acceptance Criteria
-- [ ] PatternAnalyzer class implements BaseSentimentAnalyzer interface
-- [ ] PatternAnalyzer.analyze(text) returns named tuple (polarity, subjectivity)
-- [ ] polarity is a float between -1.0 (negative) and 1.0 (positive)
-- [ ] subjectivity is a float between 0.0 (objective) and 1.0 (subjective)
-- [ ] PatternAnalyzer has kind=CONTINUOUS
-- [ ] TextBlob.sentiment returns (polarity, subjectivity) tuple
-- [ ] TextBlob.polarity returns polarity score
-- [ ] TextBlob.subjectivity returns subjectivity score
-- [ ] Positive text has polarity > 0
-- [ ] Negative text has polarity < 0
-- [ ] Sentence objects also have sentiment/polarity/subjectivity properties
-- [ ] Can pass custom analyzer to TextBlob constructor
-- [ ] analyzer is validated - raises ValueError for invalid analyzer
+- [x] PatternAnalyzer class implements BaseSentimentAnalyzer interface
+- [x] PatternAnalyzer.analyze(text) returns named tuple (polarity, subjectivity)
+- [x] polarity is a float between -1.0 (negative) and 1.0 (positive)
+- [x] subjectivity is a float between 0.0 (objective) and 1.0 (subjective)
+- [x] PatternAnalyzer has kind=CONTINUOUS
+- [x] TextBlob.sentiment returns (polarity, subjectivity) tuple
+- [x] TextBlob.polarity returns polarity score
+- [x] TextBlob.subjectivity returns subjectivity score
+- [x] Positive text has polarity > 0
+- [x] Negative text has polarity < 0
+- [x] Sentence objects also have sentiment/polarity/subjectivity properties
+- [x] Can pass custom analyzer to TextBlob constructor
+- [x] analyzer is validated - raises ValueError for invalid analyzer
+
+## Task 4: Word class with inflection and WordNet
+
+### Acceptance Criteria
+- [x] Word class inherits string-like behavior (Word("hello") == "hello")
+- [x] Word.singularize() returns singular form (dogs -> dog)
+- [x] Word.pluralize() returns plural form (dog -> dogs)
+- [x] Word.lemmatize() returns lemma form (running -> run with verb tag)
+- [x] Word.stem() returns stemmed form using Porter stemmer
+- [x] Word.spellcheck() returns list of (suggested_word, confidence) tuples
+- [x] Word.correct() returns most likely correct spelling
+- [x] Word.synsets returns list of WordNet synsets
+- [x] Word.definitions returns list of definitions
+- [x] Word can be created from TextBlob.words
+- [x] singularize() and pluralize() are available as module-level functions

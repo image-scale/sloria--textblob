@@ -6,9 +6,9 @@ Implement the textblob library starting with the core TextBlob class that users 
 ## Tasks
 - [x] Task 1: Implement the core TextBlob class with sentence/word tokenization, basic string-like behavior, and n-grams (src/textblob/blob.py, tokenizers.py, base classes, mixins, utils + tests)
 - [x] Task 2: Implement POS tagging for TextBlob using NLTK tagger (taggers.py, update blob.py + tests)
-- [>] Task 3: Implement sentiment analysis with Pattern-style analyzer that returns polarity and subjectivity scores (sentiments.py, update blob.py + tests)
-- [ ] Task 4: Implement Word class with singularize/pluralize, spelling correction, lemmatization, stemming, and WordNet integration (inflect.py, update blob.py + tests)
-- [ ] Task 5: Implement WordList class with bulk word operations and case-insensitive counting (update blob.py + tests)
+- [x] Task 3: Implement sentiment analysis with Pattern-style analyzer that returns polarity and subjectivity scores (sentiments.py, update blob.py + tests)
+- [x] Task 4: Implement Word class with singularize/pluralize, spelling correction, lemmatization, stemming, and WordNet integration (inflect.py, update blob.py + tests)
+- [>] Task 5: Implement WordList class with bulk word operations and case-insensitive counting (update blob.py + tests)
 - [ ] Task 6: Implement Sentence class with start/end indices and JSON serialization (update blob.py + tests)
 - [ ] Task 7: Implement Blobber factory class for creating TextBlobs with shared settings (update blob.py + tests)
 - [ ] Task 8: Implement noun phrase extraction using NLTK chunking (np_extractors.py, update blob.py + tests)

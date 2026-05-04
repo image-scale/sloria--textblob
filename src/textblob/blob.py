@@ -22,6 +22,154 @@ from textblob.sentiments import PatternAnalyzer
 from textblob.taggers import NLTKTagger
 from textblob.tokenizers import WordTokenizer, sent_tokenize, word_tokenize
 from textblob.utils import PUNCTUATION_REGEX, lowerstrip
+from textblob import inflect as _inflect
+
+
+class Word(str):
+    """A simple word representation. Includes methods for inflection,
+    lemmatization, and WordNet integration.
+
+    :param word: A string representing a single word.
+    :param pos_tag: (optional) The word's POS tag.
+
+    Example:
+        >>> from textblob import Word
+        >>> w = Word("dogs")
+        >>> w.singularize()
+        'dog'
+        >>> w = Word("run", pos_tag="VB")
+        >>> w.lemmatize()
+        'run'
+    """
+
+    def __new__(cls, word, pos_tag=None):
+        """Create a new Word instance."""
+        return super().__new__(cls, word)
+
+    def __init__(self, word, pos_tag=None):
+        self.string = word
+        self.pos_tag = pos_tag
+
+    def __repr__(self):
+        return f"Word('{self}')"
+
+    def singularize(self):
+        """Return the singular form of the word as a Word.
+
+        :returns: A Word representing the singular form.
+        """
+        return Word(_inflect.singularize(self.string))
+
+    def pluralize(self):
+        """Return the plural form of the word as a Word.
+
+        :returns: A Word representing the plural form.
+        """
+        return Word(_inflect.pluralize(self.string))
+
+    def lemmatize(self, pos=None):
+        """Return the lemma of the word.
+
+        :param pos: (optional) Part of speech. Can be 'n' (noun), 'v' (verb),
+            'a' (adjective), or 'r' (adverb). Defaults to noun.
+        :returns: A Word representing the lemma.
+        """
+        from textblob.wordnet import lemmatize, NOUN
+        if pos is None:
+            # Try to determine pos from pos_tag if available
+            if self.pos_tag:
+                pos = _penn_to_wordnet(self.pos_tag)
+            else:
+                pos = NOUN
+        return Word(lemmatize(self.string.lower(), pos))
+
+    def stem(self):
+        """Return the stem of the word using the Porter stemmer.
+
+        :returns: A Word representing the stem.
+        """
+        from nltk.stem import PorterStemmer
+        stemmer = PorterStemmer()
+        return Word(stemmer.stem(self.string))
+
+    def spellcheck(self):
+        """Return a list of (word, confidence) tuples representing possible
+        spelling corrections.
+
+        :returns: List of (word, confidence) tuples.
+        """
+        from textblob.spelling import suggest
+        suggestions = suggest(self.string)
+        # Return Word objects in the tuples
+        return [(Word(word), confidence) for word, confidence in suggestions]
+
+    def correct(self):
+        """Return the most likely correct spelling of the word.
+
+        :returns: A Word with the corrected spelling.
+        """
+        from textblob.spelling import correct
+        return Word(correct(self.string))
+
+    @property
+    def synsets(self):
+        """Return a list of WordNet synsets for this word.
+
+        :returns: List of Synset objects.
+        """
+        from textblob.wordnet import get_synsets
+        pos = None
+        if self.pos_tag:
+            pos = _penn_to_wordnet(self.pos_tag)
+        return get_synsets(self.string.lower(), pos)
+
+    @property
+    def definitions(self):
+        """Return a list of definitions for this word from WordNet.
+
+        :returns: List of definition strings.
+        """
+        from textblob.wordnet import get_definitions
+        pos = None
+        if self.pos_tag:
+            pos = _penn_to_wordnet(self.pos_tag)
+        return get_definitions(self.string.lower(), pos)
+
+    def define(self, pos=None):
+        """Return a list of definitions for this word.
+
+        :param pos: (optional) A part of speech tag ('n', 'v', 'a', 'r').
+        :returns: List of definition strings.
+        """
+        from textblob.wordnet import get_definitions
+        return get_definitions(self.string.lower(), pos)
+
+    def get_synsets(self, pos=None):
+        """Return a list of synsets for this word.
+
+        :param pos: (optional) A part of speech tag ('n', 'v', 'a', 'r').
+        :returns: List of Synset objects.
+        """
+        from textblob.wordnet import get_synsets
+        return get_synsets(self.string.lower(), pos)
+
+
+def _penn_to_wordnet(tag):
+    """Convert a Penn Treebank POS tag to a WordNet POS tag.
+
+    :param tag: A Penn Treebank POS tag (e.g., 'NN', 'VB', 'JJ').
+    :returns: WordNet POS tag ('n', 'v', 'a', 'r') or None.
+    """
+    from textblob.wordnet import NOUN, VERB, ADJ, ADV
+    if tag.startswith('N'):
+        return NOUN
+    elif tag.startswith('V'):
+        return VERB
+    elif tag.startswith('J'):
+        return ADJ
+    elif tag.startswith('R'):
+        return ADV
+    return NOUN  # Default to noun
 
 
 def _validated_param(obj, name, base_class, default, base_class_name=None):
@@ -103,13 +251,13 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
 
     @cached_property
     def words(self):
-        """Return a list of word tokens. This excludes punctuation characters.
+        """Return a list of Word objects. This excludes punctuation characters.
         If you want to include punctuation characters, access the ``tokens``
         property.
 
-        :returns: A list of word tokens.
+        :returns: A list of Word objects.
         """
-        return list(word_tokenize(self.raw, include_punc=False))
+        return [Word(w) for w in word_tokenize(self.raw, include_punc=False)]
 
     @cached_property
     def tokens(self):

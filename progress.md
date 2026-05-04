@@ -33,3 +33,34 @@
 **Commit**: Implement POS (Part-of-Speech) tagging for TextBlob using NLTK's averaged perceptron tagger
 **Acceptance**: 9/9 criteria met
 **Verification**: tests FAIL on previous state (no taggers module, no TestTextBlobPOSTags), PASS on current state (77 passed)
+
+## Round 3
+**Task**: Task 3 — Implement sentiment analysis with Pattern-style analyzer
+**Files created**:
+- src/textblob/sentiments.py
+- tests/test_sentiments.py
+
+**Files modified**:
+- src/textblob/blob.py
+- src/textblob/__init__.py
+- tests/test_blob.py
+
+**Commit**: Implement sentiment analysis using NLTK's VADER
+**Acceptance**: 13/13 criteria met
+**Verification**: tests FAIL on previous state (no sentiments module, no TestTextBlobSentiment), PASS on current state (94 passed)
+
+## Round 4
+**Task**: Task 4 — Implement Word class with singularize/pluralize, spelling correction, lemmatization, stemming, and WordNet integration
+**Files created**:
+- src/textblob/inflect.py
+- src/textblob/wordnet.py
+- src/textblob/spelling.py
+- tests/test_word.py
+
+**Files modified**:
+- src/textblob/blob.py
+- src/textblob/__init__.py
+
+**Commit**: Implement Word class with inflection, spelling correction, lemmatization, stemming, and WordNet integration
+**Acceptance**: 11/11 criteria met
+**Verification**: tests FAIL on previous state (no Word class, no inflect module), PASS on current state (128 passed)
