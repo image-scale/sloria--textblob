@@ -77,3 +77,13 @@
 **Commit**: Implement WordList class with bulk word operations
 **Acceptance**: 10/10 criteria met
 **Verification**: tests FAIL on previous state (no WordList class), PASS on current state (150 passed)
+
+## Round 6
+**Task**: Task 6 — Implement Sentence class with JSON serialization
+**Files modified**:
+- src/textblob/blob.py
+- tests/test_blob.py
+
+**Commit**: Implement Sentence class with JSON serialization
+**Acceptance**: 8/8 criteria met
+**Verification**: tests FAIL on previous state (no dict/json methods), PASS on current state (157 passed)

@@ -523,6 +523,29 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
         """
         return self._strkey().split(sep, maxsplit)
 
+    @property
+    def serialized(self):
+        """Return a dictionary representation of this TextBlob.
+
+        :returns: A dict with 'raw', 'sentences', 'polarity', and 'subjectivity'.
+        """
+        return {
+            "raw": self.raw,
+            "sentences": [s.dict for s in self.sentences],
+            "polarity": self.polarity,
+            "subjectivity": self.subjectivity,
+        }
+
+    def to_json(self, *args, **kwargs):
+        """Return a JSON string representation of this TextBlob.
+
+        :param args: Arguments to pass to json.dumps.
+        :param kwargs: Keyword arguments to pass to json.dumps.
+        :returns: A JSON string.
+        """
+        import json
+        return json.dumps(self.serialized, *args, **kwargs)
+
 
 class Sentence(TextBlob):
     """A sentence within a TextBlob. Inherits from TextBlob.
@@ -541,3 +564,30 @@ class Sentence(TextBlob):
         self.start = self.start_index = start_index
         # The end index within a TextBlob
         self.end = self.end_index = end_index if end_index is not None else len(sentence)
+
+    def __repr__(self):
+        return f'Sentence("{self.raw}")'
+
+    @property
+    def dict(self):
+        """Return a dictionary representation of this Sentence.
+
+        :returns: A dict with 'raw', 'start', 'end', 'polarity', and 'subjectivity'.
+        """
+        return {
+            "raw": self.raw,
+            "start": self.start,
+            "end": self.end,
+            "polarity": self.polarity,
+            "subjectivity": self.subjectivity,
+        }
+
+    def json(self, *args, **kwargs):
+        """Return a JSON string representation of this Sentence.
+
+        :param args: Arguments to pass to json.dumps.
+        :param kwargs: Keyword arguments to pass to json.dumps.
+        :returns: A JSON string.
+        """
+        import json
+        return json.dumps(self.dict, *args, **kwargs)

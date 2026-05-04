@@ -485,5 +485,72 @@ class TestTextBlobSentiment:
             TextBlob("Hello", analyzer="invalid")
 
 
+class TestJSONSerialization:
+
+    def test_sentence_dict(self):
+        """Test Sentence.dict property."""
+        sent = Sentence("Hello world.", start_index=0, end_index=12)
+        d = sent.dict
+        assert isinstance(d, dict)
+        assert d["raw"] == "Hello world."
+        assert d["start"] == 0
+        assert d["end"] == 12
+        assert "polarity" in d
+        assert "subjectivity" in d
+
+    def test_sentence_json(self):
+        """Test Sentence.json method."""
+        import json
+        sent = Sentence("Hello world.")
+        json_str = sent.json()
+        assert isinstance(json_str, str)
+        data = json.loads(json_str)
+        assert data["raw"] == "Hello world."
+
+    def test_sentence_json_with_indent(self):
+        """Test Sentence.json with indent parameter."""
+        sent = Sentence("Hello world.")
+        json_str = sent.json(indent=2)
+        assert "\n" in json_str
+
+    def test_textblob_serialized(self):
+        """Test TextBlob.serialized property."""
+        blob = TextBlob("Hello world. How are you?")
+        d = blob.serialized
+        assert isinstance(d, dict)
+        assert d["raw"] == "Hello world. How are you?"
+        assert "sentences" in d
+        assert len(d["sentences"]) == 2
+        assert "polarity" in d
+        assert "subjectivity" in d
+
+    def test_textblob_to_json(self):
+        """Test TextBlob.to_json method."""
+        import json
+        blob = TextBlob("Hello world.")
+        json_str = blob.to_json()
+        assert isinstance(json_str, str)
+        data = json.loads(json_str)
+        assert data["raw"] == "Hello world."
+        assert "sentences" in data
+
+    def test_textblob_to_json_with_indent(self):
+        """Test TextBlob.to_json with indent parameter."""
+        blob = TextBlob("Hello world.")
+        json_str = blob.to_json(indent=2)
+        assert "\n" in json_str
+
+    def test_serialized_sentences_have_indices(self):
+        """Test that serialized sentences include start/end indices."""
+        blob = TextBlob("Hello world. How are you?")
+        d = blob.serialized
+        sent1 = d["sentences"][0]
+        sent2 = d["sentences"][1]
+        assert sent1["start"] == 0
+        assert sent1["end"] == 12
+        assert sent2["start"] == 13
+        assert sent2["end"] == 25
+
+
 if __name__ == "__main__":
     pytest.main([__file__])

@@ -87,3 +87,15 @@
 - [x] WordList.stem() returns WordList with all words stemmed
 - [x] WordList can contain Word objects
 - [x] TextBlob.words returns a WordList
+
+## Task 6: Sentence class with JSON serialization
+
+### Acceptance Criteria
+- [x] Sentence inherits from TextBlob
+- [x] Sentence has start and end index properties
+- [x] Sentence has start_index and end_index aliases
+- [x] Sentence.__repr__ returns 'Sentence("...")'
+- [x] Sentence.dict property returns dictionary representation
+- [x] Sentence.json method returns JSON string
+- [x] TextBlob.serialized property returns dictionary with sentences
+- [x] TextBlob.to_json() method returns JSON representation
