@@ -15,9 +15,10 @@ import sys
 
 import nltk
 
-from textblob.base import BaseSentimentAnalyzer, BaseTagger, BaseTokenizer
+from textblob.base import BaseNPExtractor, BaseSentimentAnalyzer, BaseTagger, BaseTokenizer
 from textblob.decorators import cached_property
 from textblob.mixins import BlobComparableMixin, StringlikeMixin
+from textblob.np_extractors import ConllExtractor
 from textblob.sentiments import PatternAnalyzer
 from textblob.taggers import NLTKTagger
 from textblob.tokenizers import WordTokenizer, sent_tokenize, word_tokenize
@@ -309,6 +310,8 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
         defaults to NLTKTagger().
     :param analyzer: (optional) A sentiment analyzer instance. If ``None``,
         defaults to PatternAnalyzer().
+    :param np_extractor: (optional) A noun phrase extractor instance. If ``None``,
+        defaults to ConllExtractor().
 
     Example:
         >>> blob = TextBlob("Beautiful is better than ugly.")
@@ -323,8 +326,9 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
     tokenizer = WordTokenizer()
     pos_tagger = NLTKTagger()
     analyzer = PatternAnalyzer()
+    np_extractor = ConllExtractor()
 
-    def __init__(self, text, tokenizer=None, pos_tagger=None, analyzer=None):
+    def __init__(self, text, tokenizer=None, pos_tagger=None, analyzer=None, np_extractor=None):
         if not isinstance(text, (str, bytes)):
             raise TypeError(
                 "The `text` argument passed to `__init__(text)` "
@@ -357,6 +361,14 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
             "analyzer",
             base_class=BaseSentimentAnalyzer,
             default=TextBlob.analyzer,
+        )
+
+        # Validate and set np_extractor
+        self.np_extractor = _validated_param(
+            np_extractor,
+            "np_extractor",
+            base_class=BaseNPExtractor,
+            default=TextBlob.np_extractor,
         )
 
     @cached_property
@@ -450,6 +462,14 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
         """
         return self.sentiment.subjectivity
 
+    @cached_property
+    def noun_phrases(self):
+        """Returns a WordList of noun phrases extracted from this text.
+
+        :rtype: WordList
+        """
+        return WordList(self.np_extractor.extract(self))
+
     def _create_sentence_objects(self):
         """Returns a list of Sentence objects from the raw text."""
         sentence_objects = []
@@ -469,6 +489,7 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
                 tokenizer=self.tokenizer,
                 pos_tagger=self.pos_tagger,
                 analyzer=self.analyzer,
+                np_extractor=self.np_extractor,
             )
             sentence_objects.append(s)
         return sentence_objects

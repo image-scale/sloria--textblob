@@ -110,3 +110,13 @@
 - [x] Blobber.pos_tagger returns the configured pos_tagger
 - [x] Blobber.analyzer returns the configured analyzer
 - [x] Blobber.__repr__ returns descriptive string
+
+## Task 8: Noun phrase extraction using NLTK chunking
+
+### Acceptance Criteria
+- [x] BaseNPExtractor base class with extract() method
+- [x] ConllExtractor implements BaseNPExtractor using NLTK chunking
+- [x] TextBlob.noun_phrases property returns list of noun phrases
+- [x] Sentence.noun_phrases property returns list of noun phrases
+- [x] Noun phrases are returned as WordList
+- [x] Can pass custom np_extractor to TextBlob constructor

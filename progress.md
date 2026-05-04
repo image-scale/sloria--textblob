@@ -100,3 +100,16 @@
 **Commit**: Implement Blobber factory class
 **Acceptance**: 7/7 criteria met
 **Verification**: tests FAIL on previous state (no Blobber class), PASS on current state (167 passed)
+
+## Round 8
+**Task**: Task 8 — Implement noun phrase extraction using NLTK chunking
+**Files created**:
+- src/textblob/np_extractors.py
+- tests/test_np_extractors.py
+
+**Files modified**:
+- src/textblob/blob.py
+
+**Commit**: Implement noun phrase extraction using NLTK chunking
+**Acceptance**: 6/6 criteria met
+**Verification**: tests FAIL on previous state (no np_extractors module, no noun_phrases property), PASS on current state (179 passed)
