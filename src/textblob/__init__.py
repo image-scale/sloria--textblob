@@ -7,10 +7,11 @@ diving into common natural language processing (NLP) tasks.
 from textblob.blob import Sentence, TextBlob
 
 # Import submodules for easier access
-from textblob import taggers
+from textblob import sentiments, taggers
 
 __all__ = [
     "TextBlob",
     "Sentence",
+    "sentiments",
     "taggers",
 ]

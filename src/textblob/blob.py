@@ -7,15 +7,18 @@ Example usage:
     ['Simple', 'is', 'better', 'than', 'complex']
     >>> b.pos_tags
     [('Simple', 'NN'), ('is', 'VBZ'), ('better', 'JJR'), ('than', 'IN'), ('complex', 'JJ')]
+    >>> b.sentiment
+    Sentiment(polarity=0.5, subjectivity=0.5)
 """
 
 import sys
 
 import nltk
 
-from textblob.base import BaseTagger, BaseTokenizer
+from textblob.base import BaseSentimentAnalyzer, BaseTagger, BaseTokenizer
 from textblob.decorators import cached_property
 from textblob.mixins import BlobComparableMixin, StringlikeMixin
+from textblob.sentiments import PatternAnalyzer
 from textblob.taggers import NLTKTagger
 from textblob.tokenizers import WordTokenizer, sent_tokenize, word_tokenize
 from textblob.utils import PUNCTUATION_REGEX, lowerstrip
@@ -38,13 +41,16 @@ def _validated_param(obj, name, base_class, default, base_class_name=None):
 
 class TextBlob(StringlikeMixin, BlobComparableMixin):
     """A general text block, meant for larger bodies of text.
-    Provides methods for text analysis including tokenization, POS tagging, and more.
+    Provides methods for text analysis including tokenization, POS tagging,
+    sentiment analysis, and more.
 
     :param str text: A string.
     :param tokenizer: (optional) A tokenizer instance. If ``None``,
         defaults to WordTokenizer().
     :param pos_tagger: (optional) A tagger instance. If ``None``,
         defaults to NLTKTagger().
+    :param analyzer: (optional) A sentiment analyzer instance. If ``None``,
+        defaults to PatternAnalyzer().
 
     Example:
         >>> blob = TextBlob("Beautiful is better than ugly.")
@@ -52,12 +58,15 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
         ['Beautiful', 'is', 'better', 'than', 'ugly']
         >>> blob.pos_tags
         [('Beautiful', 'JJ'), ('is', 'VBZ'), ('better', 'JJR'), ('than', 'IN'), ('ugly', 'JJ')]
+        >>> blob.sentiment.polarity
+        0.5
     """
 
     tokenizer = WordTokenizer()
     pos_tagger = NLTKTagger()
+    analyzer = PatternAnalyzer()
 
-    def __init__(self, text, tokenizer=None, pos_tagger=None):
+    def __init__(self, text, tokenizer=None, pos_tagger=None, analyzer=None):
         if not isinstance(text, (str, bytes)):
             raise TypeError(
                 "The `text` argument passed to `__init__(text)` "
@@ -82,6 +91,14 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
             "pos_tagger",
             base_class=BaseTagger,
             default=TextBlob.pos_tagger,
+        )
+
+        # Validate and set analyzer
+        self.analyzer = _validated_param(
+            analyzer,
+            "analyzer",
+            base_class=BaseSentimentAnalyzer,
+            default=TextBlob.analyzer,
         )
 
     @cached_property
@@ -147,6 +164,34 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
     # Alias for pos_tags
     tags = pos_tags
 
+    @cached_property
+    def sentiment(self):
+        """Return a tuple of form (polarity, subjectivity) where polarity
+        is a float within the range [-1.0, 1.0] and subjectivity is a float
+        within the range [0.0, 1.0] where 0.0 is very objective and 1.0 is
+        very subjective.
+
+        :rtype: named tuple of form ``Sentiment(polarity, subjectivity)``
+        """
+        return self.analyzer.analyze(self.raw)
+
+    @property
+    def polarity(self):
+        """Return the polarity score as a float within the range [-1.0, 1.0].
+
+        :rtype: float
+        """
+        return self.sentiment.polarity
+
+    @property
+    def subjectivity(self):
+        """Return the subjectivity score as a float within the range [0.0, 1.0]
+        where 0.0 is very objective and 1.0 is very subjective.
+
+        :rtype: float
+        """
+        return self.sentiment.subjectivity
+
     def _create_sentence_objects(self):
         """Returns a list of Sentence objects from the raw text."""
         sentence_objects = []
@@ -158,13 +203,14 @@ class TextBlob(StringlikeMixin, BlobComparableMixin):
             start_index = self.raw.index(sent, char_index)
             char_index += len(sent)
             end_index = start_index + len(sent)
-            # Create a Sentence object with same tagger
+            # Create a Sentence object with same settings
             s = Sentence(
                 sent,
                 start_index=start_index,
                 end_index=end_index,
                 tokenizer=self.tokenizer,
                 pos_tagger=self.pos_tagger,
+                analyzer=self.analyzer,
             )
             sentence_objects.append(s)
         return sentence_objects

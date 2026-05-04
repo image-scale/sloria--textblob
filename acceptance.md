@@ -32,12 +32,29 @@
 ## Task 2: POS tagging for TextBlob
 
 ### Acceptance Criteria
-- [ ] TextBlob.pos_tags returns list of (word, tag) tuples
-- [ ] TextBlob.tags is an alias for pos_tags
-- [ ] POS tags use Penn Treebank tagset (e.g., 'NN' for noun, 'VB' for verb)
-- [ ] NLTKTagger class implements BaseTagger interface
-- [ ] NLTKTagger.tag(text) returns list of (word, tag) tuples
-- [ ] POS tagging excludes punctuation from results
-- [ ] Sentence objects also have pos_tags property
-- [ ] Can pass custom pos_tagger to TextBlob constructor
-- [ ] pos_tagger is validated - raises ValueError for invalid tagger
+- [x] TextBlob.pos_tags returns list of (word, tag) tuples
+- [x] TextBlob.tags is an alias for pos_tags
+- [x] POS tags use Penn Treebank tagset (e.g., 'NN' for noun, 'VB' for verb)
+- [x] NLTKTagger class implements BaseTagger interface
+- [x] NLTKTagger.tag(text) returns list of (word, tag) tuples
+- [x] POS tagging excludes punctuation from results
+- [x] Sentence objects also have pos_tags property
+- [x] Can pass custom pos_tagger to TextBlob constructor
+- [x] pos_tagger is validated - raises ValueError for invalid tagger
+
+## Task 3: Sentiment analysis with Pattern-style analyzer
+
+### Acceptance Criteria
+- [ ] PatternAnalyzer class implements BaseSentimentAnalyzer interface
+- [ ] PatternAnalyzer.analyze(text) returns named tuple (polarity, subjectivity)
+- [ ] polarity is a float between -1.0 (negative) and 1.0 (positive)
+- [ ] subjectivity is a float between 0.0 (objective) and 1.0 (subjective)
+- [ ] PatternAnalyzer has kind=CONTINUOUS
+- [ ] TextBlob.sentiment returns (polarity, subjectivity) tuple
+- [ ] TextBlob.polarity returns polarity score
+- [ ] TextBlob.subjectivity returns subjectivity score
+- [ ] Positive text has polarity > 0
+- [ ] Negative text has polarity < 0
+- [ ] Sentence objects also have sentiment/polarity/subjectivity properties
+- [ ] Can pass custom analyzer to TextBlob constructor
+- [ ] analyzer is validated - raises ValueError for invalid analyzer

@@ -425,5 +425,65 @@ class TestTextBlobPOSTags:
         assert "How" in words
 
 
+class TestTextBlobSentiment:
+
+    def test_sentiment_returns_named_tuple(self):
+        """Test that sentiment returns a named tuple with polarity and subjectivity."""
+        blob = TextBlob("I love this.")
+        sentiment = blob.sentiment
+        assert hasattr(sentiment, "polarity")
+        assert hasattr(sentiment, "subjectivity")
+
+    def test_polarity_property(self):
+        """Test that polarity property returns the polarity score."""
+        blob = TextBlob("I love this.")
+        assert blob.polarity == blob.sentiment.polarity
+
+    def test_subjectivity_property(self):
+        """Test that subjectivity property returns the subjectivity score."""
+        blob = TextBlob("I love this.")
+        assert blob.subjectivity == blob.sentiment.subjectivity
+
+    def test_positive_sentiment(self):
+        """Test that positive text has positive polarity."""
+        blob = TextBlob("I love this movie. It's wonderful!")
+        assert blob.polarity > 0
+
+    def test_negative_sentiment(self):
+        """Test that negative text has negative polarity."""
+        blob = TextBlob("I hate this. It's terrible!")
+        assert blob.polarity < 0
+
+    def test_polarity_range(self):
+        """Test that polarity is within [-1, 1]."""
+        blob = TextBlob("This is amazing!")
+        assert -1.0 <= blob.polarity <= 1.0
+
+    def test_subjectivity_range(self):
+        """Test that subjectivity is within [0, 1]."""
+        blob = TextBlob("This is amazing!")
+        assert 0.0 <= blob.subjectivity <= 1.0
+
+    def test_sentence_has_sentiment(self):
+        """Test that Sentence objects have sentiment properties."""
+        sent = Sentence("I love this.")
+        assert hasattr(sent, "sentiment")
+        assert hasattr(sent, "polarity")
+        assert hasattr(sent, "subjectivity")
+
+    def test_custom_analyzer(self):
+        """Test that custom analyzer can be passed to constructor."""
+        from textblob.sentiments import PatternAnalyzer
+
+        analyzer = PatternAnalyzer()
+        blob = TextBlob("Hello world.", analyzer=analyzer)
+        assert blob.analyzer is analyzer
+
+    def test_invalid_analyzer_raises_error(self):
+        """Test that invalid analyzer raises ValueError."""
+        with pytest.raises(ValueError):
+            TextBlob("Hello", analyzer="invalid")
+
+
 if __name__ == "__main__":
     pytest.main([__file__])
