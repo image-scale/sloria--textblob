@@ -1,0 +1,347 @@
+"""Tests for the TextBlob class."""
+
+import pytest
+
+from textblob import Sentence, TextBlob
+from textblob.tokenizers import WordTokenizer
+
+
+class TestTextBlobCreation:
+
+    def test_init_with_string(self):
+        blob = TextBlob("Hello world")
+        assert blob.raw == "Hello world"
+        assert blob.string == "Hello world"
+
+    def test_init_with_non_string_raises_error(self):
+        with pytest.raises(TypeError):
+            TextBlob(["invalid"])
+
+        with pytest.raises(TypeError):
+            TextBlob(12345)
+
+        with pytest.raises(TypeError):
+            TextBlob(None)
+
+    def test_raw_attribute(self):
+        text = "Some sample text"
+        blob = TextBlob(text)
+        assert blob.raw == text
+
+    def test_stripped_attribute(self):
+        blob = TextBlob("Hello, World!")
+        assert blob.stripped == "hello world"
+
+
+class TestTextBlobTokenization:
+
+    def test_words(self):
+        blob = TextBlob("Beautiful is better than ugly. Explicit is better than implicit.")
+        assert blob.words == [
+            "Beautiful",
+            "is",
+            "better",
+            "than",
+            "ugly",
+            "Explicit",
+            "is",
+            "better",
+            "than",
+            "implicit",
+        ]
+
+    def test_words_excludes_punctuation(self):
+        blob = TextBlob("Hello, world!")
+        assert "," not in blob.words
+        assert "!" not in blob.words
+        assert "Hello" in blob.words
+        assert "world" in blob.words
+
+    def test_tokens_includes_punctuation(self):
+        blob = TextBlob("Hello, world!")
+        assert "," in blob.tokens
+        assert "!" in blob.tokens
+
+    def test_words_includes_apostrophes_in_contractions(self):
+        blob = TextBlob("Let's test this.")
+        assert "'s" in blob.words
+        blob2 = TextBlob("I can't believe it's not butter.")
+        assert "n't" in blob2.words
+        assert "'s" in blob2.words
+
+    def test_sentences(self):
+        text = "Beautiful is better than ugly. Explicit is better than implicit."
+        blob = TextBlob(text)
+        assert len(blob.sentences) == 2
+        assert isinstance(blob.sentences[0], Sentence)
+        assert blob.sentences[0].raw == "Beautiful is better than ugly."
+        assert blob.sentences[1].raw == "Explicit is better than implicit."
+
+    def test_raw_sentences(self):
+        text = "Hello world. How are you?"
+        blob = TextBlob(text)
+        assert blob.raw_sentences == ["Hello world.", "How are you?"]
+
+    def test_tokenize_method(self):
+        blob = TextBlob("Hello world")
+        assert blob.tokenize() == ["Hello", "world"]
+
+    def test_custom_tokenizer(self):
+        class SpaceTokenizer:
+            def tokenize(self, text):
+                return text.split(" ")
+
+        blob = TextBlob("Hello world test", tokenizer=SpaceTokenizer())
+        assert blob.tokens == ["Hello", "world", "test"]
+
+
+class TestTextBlobStringBehavior:
+
+    def setup_method(self):
+        self.text = "Beautiful is better than ugly."
+        self.blob = TextBlob(self.text)
+
+    def test_len(self):
+        assert len(self.blob) == len(self.text)
+
+    def test_str(self):
+        assert str(self.blob) == self.text
+
+    def test_repr(self):
+        assert repr(self.blob) == f'TextBlob("{self.text}")'
+
+    def test_iteration(self):
+        for i, letter in enumerate(self.blob):
+            assert letter == self.text[i]
+
+    def test_in_operator(self):
+        assert "better" in self.blob
+        assert "worse" not in self.blob
+
+    def test_indexing(self):
+        assert self.blob[0] == "B"
+        assert self.blob[10] == "i"  # "Beautiful is..." - index 10 is 'i' in 'is'
+
+    def test_slicing(self):
+        sliced = self.blob[0:9]
+        assert isinstance(sliced, TextBlob)
+        assert sliced.raw == "Beautiful"
+
+    def test_upper(self):
+        result = self.blob.upper()
+        assert isinstance(result, TextBlob)
+        assert result == TextBlob(self.text.upper())
+
+    def test_lower(self):
+        result = self.blob.lower()
+        assert isinstance(result, TextBlob)
+        assert result == TextBlob(self.text.lower())
+
+    def test_strip(self):
+        blob = TextBlob("  hello  ")
+        stripped = blob.strip()
+        assert isinstance(stripped, TextBlob)
+        assert stripped == TextBlob("hello")
+
+    def test_title(self):
+        blob = TextBlob("hello world")
+        result = blob.title()
+        assert isinstance(result, TextBlob)
+        assert result == TextBlob("Hello World")
+
+    def test_find(self):
+        assert self.blob.find("better") == self.text.find("better")
+        assert self.blob.find("worse") == -1
+
+    def test_rfind(self):
+        blob = TextBlob("hello hello hello")
+        assert blob.rfind("hello") == 12
+
+    def test_startswith(self):
+        assert self.blob.startswith("Beautiful")
+        assert self.blob.starts_with("Beautiful")
+        assert not self.blob.startswith("ugly")
+
+    def test_endswith(self):
+        assert self.blob.endswith("ugly.")
+        assert self.blob.ends_with("ugly.")
+        assert not self.blob.endswith("beautiful")
+
+    def test_replace(self):
+        result = self.blob.replace("ugly", "nice")
+        assert isinstance(result, TextBlob)
+        assert "nice" in result.raw
+        assert "ugly" not in result.raw
+
+    def test_join(self):
+        words = ["hello", "world"]
+        result = TextBlob(" ").join(words)
+        assert isinstance(result, TextBlob)
+        assert result == TextBlob("hello world")
+
+    def test_format(self):
+        blob = TextBlob("Hello {0}!")
+        result = blob.format("world")
+        assert isinstance(result, TextBlob)
+        assert result == TextBlob("Hello world!")
+
+    def test_split(self):
+        result = self.blob.split()
+        assert isinstance(result, list)
+        assert result == ["Beautiful", "is", "better", "than", "ugly."]
+
+    def test_index(self):
+        assert self.blob.index("is") == self.text.index("is")
+        with pytest.raises(ValueError):
+            self.blob.index("notfound")
+
+
+class TestTextBlobComparison:
+
+    def test_equality_with_string(self):
+        blob = TextBlob("hello")
+        assert blob == "hello"
+        assert not (blob == "world")
+
+    def test_equality_with_blob(self):
+        blob1 = TextBlob("hello")
+        blob2 = TextBlob("hello")
+        blob3 = TextBlob("world")
+        assert blob1 == blob2
+        assert not (blob1 == blob3)
+
+    def test_comparison_operators(self):
+        blob1 = TextBlob("apple")
+        blob2 = TextBlob("banana")
+        assert blob1 < blob2
+        assert blob1 <= blob2
+        assert blob2 > blob1
+        assert blob2 >= blob1
+        assert blob1 != blob2
+
+    def test_comparison_with_string(self):
+        blob = TextBlob("apple")
+        assert blob < "banana"
+        assert blob > "aardvark"
+
+    def test_invalid_comparison(self):
+        blob = TextBlob("one")
+        with pytest.raises(TypeError):
+            blob < 2  # noqa: B015
+
+    def test_hash(self):
+        blob = TextBlob("hello")
+        assert hash(blob) == hash("hello")
+
+
+class TestTextBlobConcatenation:
+
+    def test_add_two_blobs(self):
+        blob1 = TextBlob("Hello ")
+        blob2 = TextBlob("world!")
+        result = blob1 + blob2
+        assert isinstance(result, TextBlob)
+        assert result == TextBlob("Hello world!")
+
+    def test_add_blob_and_string(self):
+        blob = TextBlob("Hello ")
+        result = blob + "world!"
+        assert isinstance(result, TextBlob)
+        assert result == TextBlob("Hello world!")
+
+    def test_add_invalid_type(self):
+        blob = TextBlob("Hello")
+        with pytest.raises(TypeError):
+            blob + 123
+
+
+class TestTextBlobNgrams:
+
+    def test_ngrams_default(self):
+        blob = TextBlob("I am eating a pizza.")
+        three_grams = blob.ngrams()
+        assert three_grams == [
+            ("I", "am", "eating"),
+            ("am", "eating", "a"),
+            ("eating", "a", "pizza"),
+        ]
+
+    def test_ngrams_custom_n(self):
+        blob = TextBlob("I am eating a pizza.")
+        four_grams = blob.ngrams(n=4)
+        assert four_grams == [
+            ("I", "am", "eating", "a"),
+            ("am", "eating", "a", "pizza"),
+        ]
+
+    def test_ngrams_two_grams(self):
+        blob = TextBlob("One two three")
+        two_grams = blob.ngrams(n=2)
+        assert two_grams == [
+            ("One", "two"),
+            ("two", "three"),
+        ]
+
+    def test_ngrams_zero(self):
+        blob = TextBlob("Hello world")
+        assert blob.ngrams(n=0) == []
+
+    def test_ngrams_negative(self):
+        blob = TextBlob("Hello world")
+        assert blob.ngrams(n=-1) == []
+
+
+class TestSentence:
+
+    def test_sentence_creation(self):
+        sent = Sentence("Hello world.")
+        assert sent.raw == "Hello world."
+
+    def test_sentence_indices(self):
+        sent = Sentence("Hello world.", start_index=5, end_index=17)
+        assert sent.start == 5
+        assert sent.start_index == 5
+        assert sent.end == 17
+        assert sent.end_index == 17
+
+    def test_sentence_default_indices(self):
+        sent = Sentence("Hello.")
+        assert sent.start == 0
+        assert sent.end == 6
+
+    def test_sentence_inherits_from_textblob(self):
+        sent = Sentence("Hello world.")
+        assert isinstance(sent, TextBlob)
+        assert sent.words == ["Hello", "world"]
+
+    def test_sentence_repr(self):
+        sent = Sentence("Hello world.")
+        assert repr(sent) == 'Sentence("Hello world.")'
+
+
+class TestTextBlobWithMultipleSentences:
+
+    def test_sentence_indices_in_blob(self):
+        text = "Hello world. How are you?"
+        blob = TextBlob(text)
+        sent1, sent2 = blob.sentences
+
+        # First sentence
+        assert sent1.start == 0
+        assert sent1.end == 12
+        assert blob.raw[sent1.start:sent1.end] == "Hello world."
+
+        # Second sentence
+        assert sent2.start == 13
+        assert sent2.end == 25
+        assert blob.raw[sent2.start:sent2.end] == "How are you?"
+
+    def test_using_indices_for_slicing(self):
+        blob = TextBlob("Hello world. How do you do?")
+        sent1, sent2 = blob.sentences
+        assert blob[sent1.start:sent1.end] == TextBlob(str(sent1))
+        assert blob[sent2.start:sent2.end] == TextBlob(str(sent2))
+
+
+if __name__ == "__main__":
+    pytest.main([__file__])

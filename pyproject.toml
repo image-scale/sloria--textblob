@@ -1,0 +1,15 @@
+[project]
+name = "textblob"
+version = "0.1.0"
+description = "Simple, Pythonic text processing. Sentiment analysis, part-of-speech tagging, noun phrase parsing, and more."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["nltk>=3.9"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
