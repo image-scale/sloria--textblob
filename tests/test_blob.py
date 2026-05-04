@@ -3,6 +3,7 @@
 import pytest
 
 from textblob import Sentence, TextBlob
+from textblob.taggers import NLTKTagger
 from textblob.tokenizers import WordTokenizer
 
 
@@ -87,7 +88,9 @@ class TestTextBlobTokenization:
         assert blob.tokenize() == ["Hello", "world"]
 
     def test_custom_tokenizer(self):
-        class SpaceTokenizer:
+        from textblob.base import BaseTokenizer
+
+        class SpaceTokenizer(BaseTokenizer):
             def tokenize(self, text):
                 return text.split(" ")
 
@@ -341,6 +344,85 @@ class TestTextBlobWithMultipleSentences:
         sent1, sent2 = blob.sentences
         assert blob[sent1.start:sent1.end] == TextBlob(str(sent1))
         assert blob[sent2.start:sent2.end] == TextBlob(str(sent2))
+
+
+class TestTextBlobPOSTags:
+
+    def test_pos_tags_returns_list_of_tuples(self):
+        """Test that pos_tags returns a list of (word, tag) tuples."""
+        blob = TextBlob("Simple is better than complex.")
+        tags = blob.pos_tags
+        assert isinstance(tags, list)
+        assert all(isinstance(item, tuple) for item in tags)
+        assert all(len(item) == 2 for item in tags)
+
+    def test_pos_tags_content(self):
+        """Test that pos_tags contains expected words."""
+        blob = TextBlob("Simple is better than complex.")
+        tags = blob.pos_tags
+        words = [word for word, tag in tags]
+        assert "Simple" in words
+        assert "is" in words
+        assert "better" in words
+
+    def test_tags_is_alias_for_pos_tags(self):
+        """Test that tags is an alias for pos_tags."""
+        blob = TextBlob("Hello world.")
+        assert blob.tags == blob.pos_tags
+
+    def test_pos_tags_uses_penn_treebank_tagset(self):
+        """Test that tags use Penn Treebank tagset."""
+        blob = TextBlob("The quick brown fox jumps.")
+        tags = blob.pos_tags
+        tag_set = {tag for _, tag in tags}
+        # Common Penn Treebank tags should appear
+        assert any(tag.startswith("DT") for tag in tag_set) or any(
+            tag.startswith("NN") for tag in tag_set
+        )
+
+    def test_pos_tags_excludes_punctuation(self):
+        """Test that punctuation is excluded from pos_tags."""
+        blob = TextBlob("Hello, world!")
+        tags = blob.pos_tags
+        words = [word for word, tag in tags]
+        # Punctuation should not be in words
+        assert "," not in words
+        assert "!" not in words
+
+    def test_sentence_has_pos_tags(self):
+        """Test that Sentence objects also have pos_tags."""
+        sent = Sentence("The quick brown fox.")
+        tags = sent.pos_tags
+        assert isinstance(tags, list)
+        words = [word for word, tag in tags]
+        assert "quick" in words
+
+    def test_custom_pos_tagger(self):
+        """Test that custom pos_tagger can be passed to constructor."""
+        tagger = NLTKTagger()
+        blob = TextBlob("Hello world.", pos_tagger=tagger)
+        assert blob.pos_tagger is tagger
+
+    def test_invalid_pos_tagger_raises_error(self):
+        """Test that invalid pos_tagger raises ValueError."""
+        with pytest.raises(ValueError):
+            TextBlob("Hello", pos_tagger="invalid")
+
+    def test_pos_tagger_is_shared_among_instances(self):
+        """Test that pos_tagger is shared among instances."""
+        blob1 = TextBlob("Hello world")
+        blob2 = TextBlob("Another text")
+        # Default taggers should be the same instance
+        assert blob1.pos_tagger is blob2.pos_tagger
+
+    def test_pos_tags_multiple_sentences(self):
+        """Test pos_tags with multiple sentences."""
+        blob = TextBlob("Hello world. How are you?")
+        tags = blob.pos_tags
+        words = [word for word, tag in tags]
+        # Words from both sentences should be present
+        assert "Hello" in words
+        assert "How" in words
 
 
 if __name__ == "__main__":

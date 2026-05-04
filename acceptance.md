@@ -3,28 +3,41 @@
 ## Task 1: Core TextBlob class with tokenization and string-like behavior
 
 ### Acceptance Criteria
-- [ ] TextBlob("Hello world") creates a text blob object
-- [ ] TextBlob must be initialized with a string, raises TypeError for non-strings
-- [ ] TextBlob.raw returns the original text string
-- [ ] TextBlob.words returns a list of word tokens (excluding punctuation)
-- [ ] TextBlob.tokens returns all tokens including punctuation
-- [ ] TextBlob.sentences returns a list of Sentence objects
-- [ ] TextBlob.raw_sentences returns a list of raw sentence strings
-- [ ] len(TextBlob("hello")) returns 5 (character count)
-- [ ] TextBlob supports iteration over characters
-- [ ] TextBlob supports "in" operator for substring checking
-- [ ] TextBlob supports indexing and slicing (blob[0], blob[0:5])
-- [ ] TextBlob supports string methods: upper(), lower(), strip(), title(), find(), rfind(), startswith(), endswith(), replace(), join(), format(), split(), index()
-- [ ] TextBlob supports comparison operators (==, <, >, <=, >=, !=) with strings and other blobs
-- [ ] TextBlob supports concatenation with + operator (blob + blob, blob + string)
-- [ ] TextBlob supports hashing (hash(blob))
-- [ ] repr(TextBlob("text")) returns 'TextBlob("text")'
-- [ ] str(TextBlob("text")) returns "text"
-- [ ] TextBlob.ngrams(n=3) returns list of n-word tuples from the text
-- [ ] ngrams(n=0) or ngrams(n<0) returns empty list
-- [ ] WordTokenizer.tokenize(text) returns list of word tokens
-- [ ] WordTokenizer.tokenize(text, include_punc=False) excludes punctuation
-- [ ] SentenceTokenizer.tokenize(text) returns list of sentences
-- [ ] sent_tokenize(text) is a generator that yields sentences
-- [ ] word_tokenize(text) is a generator that yields words
-- [ ] Tokenizers have itokenize() method that returns a generator
+- [x] TextBlob("Hello world") creates a text blob object
+- [x] TextBlob must be initialized with a string, raises TypeError for non-strings
+- [x] TextBlob.raw returns the original text string
+- [x] TextBlob.words returns a list of word tokens (excluding punctuation)
+- [x] TextBlob.tokens returns all tokens including punctuation
+- [x] TextBlob.sentences returns a list of Sentence objects
+- [x] TextBlob.raw_sentences returns a list of raw sentence strings
+- [x] len(TextBlob("hello")) returns 5 (character count)
+- [x] TextBlob supports iteration over characters
+- [x] TextBlob supports "in" operator for substring checking
+- [x] TextBlob supports indexing and slicing (blob[0], blob[0:5])
+- [x] TextBlob supports string methods: upper(), lower(), strip(), title(), find(), rfind(), startswith(), endswith(), replace(), join(), format(), split(), index()
+- [x] TextBlob supports comparison operators (==, <, >, <=, >=, !=) with strings and other blobs
+- [x] TextBlob supports concatenation with + operator (blob + blob, blob + string)
+- [x] TextBlob supports hashing (hash(blob))
+- [x] repr(TextBlob("text")) returns 'TextBlob("text")'
+- [x] str(TextBlob("text")) returns "text"
+- [x] TextBlob.ngrams(n=3) returns list of n-word tuples from the text
+- [x] ngrams(n=0) or ngrams(n<0) returns empty list
+- [x] WordTokenizer.tokenize(text) returns list of word tokens
+- [x] WordTokenizer.tokenize(text, include_punc=False) excludes punctuation
+- [x] SentenceTokenizer.tokenize(text) returns list of sentences
+- [x] sent_tokenize(text) is a generator that yields sentences
+- [x] word_tokenize(text) is a generator that yields words
+- [x] Tokenizers have itokenize() method that returns a generator
+
+## Task 2: POS tagging for TextBlob
+
+### Acceptance Criteria
+- [ ] TextBlob.pos_tags returns list of (word, tag) tuples
+- [ ] TextBlob.tags is an alias for pos_tags
+- [ ] POS tags use Penn Treebank tagset (e.g., 'NN' for noun, 'VB' for verb)
+- [ ] NLTKTagger class implements BaseTagger interface
+- [ ] NLTKTagger.tag(text) returns list of (word, tag) tuples
+- [ ] POS tagging excludes punctuation from results
+- [ ] Sentence objects also have pos_tags property
+- [ ] Can pass custom pos_tagger to TextBlob constructor
+- [ ] pos_tagger is validated - raises ValueError for invalid tagger
